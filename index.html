@@ -3882,6 +3882,7 @@ function AdminBulkImport({showToast}) {
       try{
         const freshMenu=await loadMenuData();
         if(freshMenu&&freshMenu.length){
+          await saveMenu(freshMenu, null);
           setMenu(freshMenu);
           showToast('Menu updated — '+freshMenu.length+' total items loaded!');
           setImportStatus(ok+' items imported and menu refreshed!');
