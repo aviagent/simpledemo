@@ -772,8 +772,8 @@ function idbGetSync(key,defaultVal){return store.get(key+'_cache',defaultVal);}
 
 // -- Supabase REST helpers --
 function sbCfg(){
-  const url=store.get('stellas_sb_url','').replace(/\/$/,'');
-  const key=store.get('stellas_sb_key','');
+  const url=(store.get('stellas_sb_url','')||'https://xorujebgrfaqnpwctkyi.supabase.co').replace(/\/$/,'');
+  const key=store.get('stellas_sb_key','')||'sb_publishable_1UK0HHWj_xpRPLwJcTPLRjbdpWYeCnlc';
   return url&&key?{url,key}:null;
 }
 function sbHeaders(cfg){
@@ -1055,7 +1055,7 @@ function resolveVideoUrl(item) {
   if (item.videoUrl && item.videoUrl.startsWith('http')) return item.videoUrl;
   const filename = item.videoFilename || (item.videoUrl && !item.videoUrl.startsWith('data:') ? item.videoUrl : '');
   if (filename) {
-    const r2Base = store.get('stellas_r2_base','').replace(/\/$/,'');
+    const r2Base = (store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev').replace(/\/$/,'');
     if (r2Base) return `${r2Base}/${filename}`;
   }
   return item.videoUrl || '';
@@ -1974,7 +1974,7 @@ function MediaPreview({src,type='image',label}){
 
 // -- SHARED: Upload + storage filename field ------------------
 function VideoField({videoUrl,videoFilename,onUrlChange,onFilenameChange}){
-  const r2Base=store.get('stellas_r2_base','').replace(/\/$/,'');
+  const r2Base=(store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev').replace(/\/$/,'');
   const r2WorkerUrl=store.get('stellas_r2_worker','');
   const[uploading,setUploading]=useState(false);
   const[uploadMsg,setUploadMsg]=useState('');
@@ -2293,7 +2293,7 @@ function AdminMenu({menu,setMenu,showToast}){
 
     // -- Item List --
     menu.map(item=>{
-      const r2Base=store.get('stellas_r2_base','');
+      const r2Base=store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev';
       const videoResolved=item.videoUrl||(r2Base&&item.videoFilename?`${r2Base.replace(/\/$/,'')}/${item.videoFilename}`:'');
       return h('div',{key:item.id,className:'glass',style:{padding:12,marginBottom:10,display:'flex',gap:12,alignItems:'center'}},
         item.imgUrl
@@ -2561,7 +2561,7 @@ function AdminMessages({messages,setMessages,showToast}){
 
     // -- Message List --
     messages.map(msg=>{
-      const r2Base=store.get('stellas_r2_base','');
+      const r2Base=store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev';
       const vidResolved=msg.videoUrl||(r2Base&&msg.videoFilename?`${r2Base.replace(/\/$/,'')}/${msg.videoFilename}`:'');
       const emoji=typeEmoji[msg.type]||'✦';
       const bg=typeBg[msg.type]||'rgba(201,168,76,.08)';
@@ -3774,7 +3774,7 @@ function AdminBulkImport({showToast}) {
     if(!files.length){showToast('No files selected');return;}
     setUploadingMedia(true);
     const uploaded={...uploadedMedia};
-    const r2Base=(store.get('stellas_r2_base','')||'').replace(/\/$/,'');
+    const r2Base=(store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev').replace(/\/$/,'');
     for(let i=0;i<files.length;i++){
       const f=files[i];
       setMediaStatus('Uploading '+f.name+' ('+(i+1)+'/'+files.length+') to R2...');
@@ -3834,7 +3834,7 @@ function AdminBulkImport({showToast}) {
       try{
         const imgFile=row.image_filename||row.image||'';
         const vidFile=row.video_filename||row.video||'';
-        const _r2Base=(store.get('stellas_r2_base','')||'').replace(/\/$/,'');
+        const _r2Base=(store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev').replace(/\/$/,'');
         const imgUrl=uploadedMedia[imgFile]
           ||(imgFile&&imgFile.startsWith('http')?imgFile:'')
           ||(_r2Base&&imgFile?_r2Base+'/'+imgFile:'')
