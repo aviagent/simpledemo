@@ -513,6 +513,9 @@ input,textarea,select{font-family:'Lato',sans-serif;font-size:14px}
 .fade-in{animation:fadeIn .35s ease forwards}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.menu-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;gap:12px;color:var(--text3);font-size:13px}
+.menu-loading-spinner{width:28px;height:28px;border:3px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
 
 /* --- BADGE --- */
 .badge{
@@ -1295,7 +1298,7 @@ function AppHeader({onAdminClick,cartCount=0,onCartOpen}){
 // ==========================================
 // HOME SCREEN (simplified - no "Tap to Speak" button)
 // ==========================================
-function HomeScreen({menu,messages,onItemSelect,onPromoSelect,homeTitles}){
+function HomeScreen({menu,menuLoading,messages,onItemSelect,onPromoSelect,homeTitles}){
   const welcome=messages.find(m=>m.type==='welcome'&&m.active);
   const welcomeVideo=resolveVideoUrl(welcome||null);
   const welcomeImg=welcome?.imgUrl||'';
@@ -1396,35 +1399,39 @@ function HomeScreen({menu,messages,onItemSelect,onPromoSelect,homeTitles}){
       h('span',{className:'section-head-title'},highlightsTitle),
       h('div',{className:'section-head-line'})
     ),
-    h('div',{className:'hscroll'},
-      menu.filter(i=>i.visible).slice(0,6).map(item=>h('div',{
-        key:item.id,className:'feat-card',
-        style:{position:'relative',...cardTapStyle},
-        onClick:()=>onItemSelect(item),
-        role:'button','aria-label':'View '+item.name
-      },
-        h('img',{src:item.imgUrl,alt:item.name,loading:'lazy'}),
-        h('div',{className:'feat-label'},
-          h('div',{className:'feat-label-title'},item.name),
-          h('div',{className:'feat-label-sub',style:{color:'var(--gold3)',fontWeight:700}},'$'+item.price)
-        )
-      ))
-    ),
+    menuLoading
+      ? h('div',{className:'menu-loading'},h('div',{className:'menu-loading-spinner'}),'Loading menu...')
+      : h('div',{className:'hscroll'},
+          menu.filter(i=>i.visible).slice(0,6).map(item=>h('div',{
+            key:item.id,className:'feat-card',
+            style:{position:'relative',...cardTapStyle},
+            onClick:()=>onItemSelect(item),
+            role:'button','aria-label':'View '+item.name
+          },
+            h('img',{src:item.imgUrl,alt:item.name,loading:'lazy'}),
+            h('div',{className:'feat-label'},
+              h('div',{className:'feat-label-title'},item.name),
+              h('div',{className:'feat-label-sub',style:{color:'var(--gold3)',fontWeight:700}},'$'+item.price)
+            )
+          ))
+        ),
 
     // Chef's Picks
     h('div',{className:'section-head'},
       h('span',{className:'section-head-title'},picksTitle),
       h('div',{className:'section-head-line'})
     ),
-    h('div',{className:'hscroll'},
-      menu.filter(i=>i.visible&&(picksCategory==='All'||i.cat===picksCategory)).map(item=>h('div',{
-        key:item.id,className:'feat-card',
-        style:{position:'relative',...cardTapStyle},
-        onClick:()=>onItemSelect(item),
-        role:'button','aria-label':'View '+item.name
-      },
-        h('img',{src:item.imgUrl,alt:item.name,loading:'lazy'}),
-        h('div',{className:'feat-label'},
+    menuLoading
+      ? h('div',{className:'menu-loading'},h('div',{className:'menu-loading-spinner'}),'Loading menu...')
+      : h('div',{className:'hscroll'},
+          menu.filter(i=>i.visible&&(picksCategory==='All'||i.cat===picksCategory)).map(item=>h('div',{
+            key:item.id,className:'feat-card',
+            style:{position:'relative',...cardTapStyle},
+            onClick:()=>onItemSelect(item),
+            role:'button','aria-label':'View '+item.name
+          },
+            h('img',{src:item.imgUrl,alt:item.name,loading:'lazy'}),
+            h('div',{className:'feat-label'},
           h('div',{className:'feat-label-title'},item.name),
           h('div',{className:'feat-label-sub',style:{color:'var(--gold3)',fontWeight:700}},'$'+item.price)
         )
@@ -1496,11 +1503,12 @@ function ResponseScreen({item,response,videoUrl,welcomeImgSrc,onOrder,onBack}){
 // ==========================================
 // MENU SCREEN (exact copy from original)
 // ==========================================
-function MenuScreen({menu,onItemSelect}){
+function MenuScreen({menu,menuLoading,onItemSelect}){
   const[search,setSearch]=useState('');
   const[cat,setCat]=useState('All');
   const cats=['All',...new Set(menu.map(i=>i.cat))];
   const filtered=menu.filter(i=>i.visible&&(cat==='All'||i.cat===cat)&&i.name.toLowerCase().includes(search.toLowerCase()));
+  if(menuLoading) return h('div',{className:'main-scroll'},h('div',{className:'menu-loading',style:{paddingTop:60}},h('div',{className:'menu-loading-spinner'}),'Loading menu...'));
   return h('div',{className:'main-scroll'},
     h('div',{style:{padding:'12px 16px 8px'}},
       h('div',{style:{display:'flex',alignItems:'center',gap:10,background:'white',borderRadius:14,padding:'11px 14px',border:'1.5px solid var(--gold)',boxShadow:'var(--shadow-card)'}},
@@ -2765,7 +2773,7 @@ function AdminAnalytics({tableOrders}){
     ),
     h('div',{style:{background:'white',borderRadius:16,padding:16,boxShadow:'var(--shadow-card)'}},
       h('div',{style:{fontFamily:"'Playfair Display',serif",fontSize:16,color:'var(--text1)',marginBottom:12}},'Most Ordered'),
-      [{n:'Sticky Toffee Pudding',r:28,p:'+8%'},{n:'Chicken Madeira Rigatoni',r:25,p:'+7%'},{n:'Spinach & Artichoke Dip',r:23,p:'+6%'},{n:'Lemon Basil Salmon',r:18,p:'+10%'}]
+      []
       .map((item,i)=>h('div',{key:i,style:{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<3?'1px solid var(--cream2)':'none'}},
         h('div',{style:{width:36,height:36,background:'var(--cream2)',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}},['🍮','🍝','🥬','🐟'][i]),
         h('div',{style:{flex:1}},
@@ -4069,6 +4077,7 @@ function App(){
   const[screen,setScreen]=useState('home');
   const[navTab,setNavTab]=useState('home');
   const[menu,setMenu]=useState(DEFAULT_MENU);
+  const[menuLoading,setMenuLoading]=useState(true);
   const[messages,setMessages]=useState(DEFAULT_MESSAGES);
   const[faq,setFaq]=useState([]);
   const[tableOrders,setTableOrders]=useState(()=>store.get('stellas_orders',{}));
@@ -4091,7 +4100,7 @@ function App(){
 
   // Load data on mount
   useEffect(()=>{
-    loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); });
+    loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); setMenuLoading(false); });
     loadMessagesData().then(v=>{ if(v&&v.length) setMessages(v); });
     loadFAQData().then(v=>{ if(v&&v.length) setFaq(v); });
     try{ const s=localStorage.getItem('stellas_last_order'); if(s) setLastOrderNum(JSON.parse(s).orderNum); }catch(e){}
@@ -4244,9 +4253,9 @@ function App(){
     }),
     !showAdmin&&h('div',{className:'gold-divider'}),
 
-    !showAdmin&&screen==='home'&&h(HomeScreen,{menu,messages,onItemSelect:handleItemSelect,onPromoSelect:handlePromoSelect,homeTitles:store.get('stellas_home_titles',homeTitles)}),
+    !showAdmin&&screen==='home'&&h(HomeScreen,{menu,menuLoading,messages,onItemSelect:handleItemSelect,onPromoSelect:handlePromoSelect,homeTitles:store.get('stellas_home_titles',homeTitles)}),
     !showAdmin&&screen==='response'&&h(ResponseScreen,{item:selectedItem,response:responseText,videoUrl,welcomeImgSrc:getWelcomeImage(messages)||'',onOrder:placeOrder,onBack:()=>{setScreen('home');setNavTab('home');}}),
-    !showAdmin&&screen==='menu'&&h(MenuScreen,{menu,onItemSelect:handleItemSelect}),
+    !showAdmin&&screen==='menu'&&h(MenuScreen,{menu,menuLoading,onItemSelect:handleItemSelect}),
     !showAdmin&&screen==='locations'&&h(LocationsScreen),
     !showAdmin&&screen==='myorder'&&h(MyOrderScreen,{key:orderVersion}),
 
