@@ -772,7 +772,7 @@ function idbGetSync(key,defaultVal){return store.get(key+'_cache',defaultVal);}
 
 // -- Supabase REST helpers --
 function sbCfg(){
-  const url=(store.get('stellas_sb_url','')||'https://xorujebgrfaqnpwctkyi.supabase.co').replace(/\/$/,'');
+  const url=((store.get('stellas_sb_url','')||'https://xorujebgrfaqnpwctkyi.supabase.co')).replace(/\/$/,'');
   const key=store.get('stellas_sb_key','')||'sb_publishable_1UK0HHWj_xpRPLwnAYZeQg_SJ1QXJP5';
   return url&&key?{url,key}:null;
 }
