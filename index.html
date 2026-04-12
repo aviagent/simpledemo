@@ -1102,9 +1102,10 @@ function resolveVideoUrl(item) {
 // ==========================================
 // WELCOME HELPERS
 // ==========================================
+const IDLE_IMG='https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/avi-anna-idol-breathing-image-.png';
 function getWelcomeImage(messages){
   const w=messages&&messages.find(m=>m.type==='welcome'&&m.active);
-  return (w&&w.imgUrl)||null;
+  return (w&&w.imgUrl)||IDLE_IMG;
 }
 function getWelcomeVideo(messages){
   return resolveVideoUrl((messages&&messages.find(m=>m.type==='welcome'&&m.active))||null)||'';
@@ -1338,7 +1339,7 @@ function AppHeader({onAdminClick,cartCount=0,onCartOpen}){
 function HomeScreen({menu,menuLoading,messages,onItemSelect,onPromoSelect,homeTitles}){
   const welcome=messages.find(m=>m.type==='welcome'&&m.active);
   const welcomeVideo=resolveVideoUrl(welcome||null);
-  const welcomeImg=welcome?.imgUrl||'';
+  const welcomeImg=welcome?.imgUrl||IDLE_IMG;
 
   // Play welcome video on first touch of the session
   const[touchTriggered,setTouchTriggered]=useState(false);
@@ -4150,11 +4151,16 @@ function App(){
   const[takeoutConfirmed,setTakeoutConfirmed]=useState(null);
   const[lastOrderNum,setLastOrderNum]=useState('');
 
-  // Load data on mount
+  // Load data on mount — baked-in DEFAULT_MENU is shown immediately; IDB cache
+  // applied in the first tick; Supabase syncs in the background (10s timeout).
+  // None of these calls wipe state on failure (if() guards throughout).
   useEffect(()=>{
-    // Skip Supabase load — use baked-in DEFAULT_MENU data instead
-    setMenuLoading(false); return;
-    loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); setMenuLoading(false); });
+    // 1. Restore from IDB cache instantly (faster than Supabase)
+    idbGet('stellas_menu', null).then(v=>{ if(v&&v.length) setMenu(v); });
+    idbGet('stellas_messages', null).then(v=>{ if(v&&v.length) setMessages(v); });
+    idbGet('stellas_faq', null).then(v=>{ if(v&&v.length) setFaq(v); });
+    // 2. Background Supabase sync — updates state only on success
+    loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); });
     loadMessagesData().then(v=>{ if(v&&v.length) setMessages(v); });
     loadFAQData().then(v=>{ if(v&&v.length) setFaq(v); });
     try{ const s=localStorage.getItem('stellas_last_order'); if(s) setLastOrderNum(JSON.parse(s).orderNum); }catch(e){}
