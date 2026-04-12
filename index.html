@@ -908,7 +908,7 @@ async function deleteFAQEntry(id, updatedFAQ){
 }
 
 // -- STARTUP LOAD --
-async function loadMenuData(){ return; // use baked-in data
+async function loadMenuData(){
   const sbRows = await sbLoadAll('menu_items');
   if(sbRows && sbRows.length){
     const items = sbRows.map(menuFromSB);
@@ -920,7 +920,7 @@ async function loadMenuData(){ return; // use baked-in data
   return null;
 }
 
-async function loadMessagesData(){ return; // use baked-in data
+async function loadMessagesData(){
   const sbRows = await sbLoadAll('messages');
   if(sbRows && sbRows.length){
     const msgs = sbRows.map(msgFromSB);
@@ -932,7 +932,7 @@ async function loadMessagesData(){ return; // use baked-in data
   return null;
 }
 
-async function loadFAQData(){ return; // use baked-in data
+async function loadFAQData(){
   const sbRows = await sbLoadAll('faq_info');
   if(sbRows && sbRows.length){
     await idbSet('stellas_faq', sbRows);
@@ -1202,18 +1202,19 @@ function AvatarDisplay({videoUrl,posterUrl,height='62vh',active=false,loop=false
     myPlayId.current = id;
     setEnded(false); setVideoErr(false); setMuted(true);
 
-    v.pause();
     v.src = playUrl;
     v.loop = effectiveLoop;
     v.volume = getSavedVolume();
     v.muted = true;
+    v.load();
     const p = v.play();
     if(p && p.then) p.then(()=>{
       if(myPlayId.current !== id){ v.pause(); return; }
       tryUnlock(v);
     }).catch(e=>{
-      if(e.name !== 'NotAllowedError' && myPlayId.current === id){
+      if(myPlayId.current === id){
         console.warn('[Video] Playback error:', e.message);
+        setVideoErr(true);
       }
     });
   },[playUrl]);
@@ -1287,11 +1288,12 @@ function AvatarDisplay({videoUrl,posterUrl,height='62vh',active=false,loop=false
   return h('div',{className:'avatar-video-wrap',style:{height}},
     h('video',{
       ref:videoRef,
-      playsInline:true,muted:true,
+      playsInline:true,muted:true,autoPlay:true,
       'webkit-playsinline':'','x-webkit-airplay':'deny',
       disablePictureInPicture:true,disableRemotePlayback:true,
       style:{width:'100%',height:'100%',display:'block',objectFit:'cover',objectPosition:'top center',
-        pointerEvents:'none',opacity:(ended&&!idleAfter)?0:1,transition:'opacity .4s ease'},
+        opacity:(ended&&!idleAfter)?0:1,transition:'opacity .4s ease'},
+      onClick:()=>{ if(videoErr||ended) replay(); },
       onEnded:()=>{ setEnded(true); if(onEnded)onEnded(); },
       onError:()=>{ setVideoErr(true); },
     }),
@@ -2017,7 +2019,7 @@ function MediaPreview({src,type='image',label}){
 }
 
 // -- SHARED: Upload + storage filename field ------------------
-function VideoField({videoUrl,videoFilename,onUrlChange,onFilenameChange}){
+function VideoField({videoUrl,videoFilename,onUrlChange,onFilenameChange,onAfterUpload}){
   const r2Base=(store.get('stellas_r2_base','')||'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev').replace(/\/$/,'');
   const r2WorkerUrl=store.get('stellas_r2_worker','');
   const[uploading,setUploading]=useState(false);
@@ -2053,6 +2055,7 @@ function VideoField({videoUrl,videoFilename,onUrlChange,onFilenameChange}){
       if(!d.ok){throw new Error(d.error||'Upload failed');}
       onFilenameChange(d.filename);onUrlChange('');
       setUploadMsg('✓ Uploaded to R2: '+d.filename);
+      if(onAfterUpload) onAfterUpload(d.filename);
     }catch(e){
       console.error('[R2] Upload failed:',e);
       const data=await readFileAsDataURL(file);
@@ -2234,6 +2237,13 @@ function AdminMenu({menu,setMenu,showToast}){
         videoFilename:form.videoFilename||'',
         onUrlChange:v=>f('videoUrl',v),
         onFilenameChange:v=>f('videoFilename',v),
+        onAfterUpload:filename=>{
+          if(!form.name||!form.price)return;
+          const updated={...form,videoFilename:filename,videoUrl:''};
+          const item={...updated,id:editing||Date.now(),price:parseFloat(updated.price)};
+          const upd=editing?menu.map(i=>i.id===editing?item:i):[...menu,item];
+          setMenu(upd);saveMenu(upd,showToast);
+        },
       }),
 
       // -- Triggers (array -- each with keywords, action, optional video) --
@@ -2485,6 +2495,13 @@ function AdminMessages({messages,setMessages,showToast}){
         videoFilename:form.videoFilename||'',
         onUrlChange:v=>f('videoUrl',v),
         onFilenameChange:v=>f('videoFilename',v),
+        onAfterUpload:filename=>{
+          if(!form.title)return;
+          const updated={...form,videoFilename:filename,videoUrl:''};
+          const msg={...updated,id:editing||Date.now()};
+          const upd=editing?messages.map(m=>m.id===editing?msg:m):[...messages,msg];
+          setMessages(upd);saveMessages(upd,showToast);
+        },
       }),
 
       // -- Triggers ------------------------------------------
