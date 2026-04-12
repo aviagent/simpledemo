@@ -4132,6 +4132,8 @@ function App(){
 
   // Load data on mount
   useEffect(()=>{
+    // Skip Supabase load — use baked-in DEFAULT_MENU data instead
+    setMenuLoading(false); return;
     loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); setMenuLoading(false); });
     loadMessagesData().then(v=>{ if(v&&v.length) setMessages(v); });
     loadFAQData().then(v=>{ if(v&&v.length) setFaq(v); });
