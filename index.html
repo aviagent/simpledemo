@@ -904,7 +904,7 @@ async function deleteFAQEntry(id, updatedFAQ){
 }
 
 // -- STARTUP LOAD --
-async function loadMenuData(){
+async function loadMenuData(){ return; // use baked-in data
   const sbRows = await sbLoadAll('menu_items');
   if(sbRows && sbRows.length){
     const items = sbRows.map(menuFromSB);
@@ -916,7 +916,7 @@ async function loadMenuData(){
   return null;
 }
 
-async function loadMessagesData(){
+async function loadMessagesData(){ return; // use baked-in data
   const sbRows = await sbLoadAll('messages');
   if(sbRows && sbRows.length){
     const msgs = sbRows.map(msgFromSB);
@@ -928,7 +928,7 @@ async function loadMessagesData(){
   return null;
 }
 
-async function loadFAQData(){
+async function loadFAQData(){ return; // use baked-in data
   const sbRows = await sbLoadAll('faq_info');
   if(sbRows && sbRows.length){
     await idbSet('stellas_faq', sbRows);
