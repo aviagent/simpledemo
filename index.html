@@ -894,6 +894,24 @@ async function saveFAQ(updatedFAQ, showToastFn){
   if(showToastFn) showToastFn('Saved');
 }
 
+async function syncAllToCloud(menu, messages, showToastFn){
+  const cfg=sbCfg();
+  if(!cfg){if(showToastFn)showToastFn('No Supabase config — skipping cloud sync');return;}
+  const total=menu.length+messages.length;
+  let done=0;
+  for(const item of menu){
+    done++;
+    if(showToastFn)showToastFn(`Syncing ${done}/${total}...`);
+    await sbUpsert('menu_items',menuToSB(item));
+  }
+  for(const msg of messages){
+    done++;
+    if(showToastFn)showToastFn(`Syncing ${done}/${total}...`);
+    await sbUpsert('messages',msgToSB(msg));
+  }
+  if(showToastFn)showToastFn('\u2713 Synced!');
+}
+
 async function deleteMenuItem(id, updatedMenu){
   await idbSet('stellas_menu', updatedMenu);
   await sbDelete('menu_items', id);
@@ -4288,6 +4306,10 @@ function App(){
     showAdmin&&adminAuth&&h('div',{className:'admin-wrap'},
       h('div',{className:'admin-header'},
         h('div',{style:{fontFamily:"'Playfair Display',serif",fontSize:18,color:'var(--gold)'}},"Stella's Admin",pendingOrders>0&&h('span',{style:{marginLeft:8,background:'var(--red)',color:'white',fontSize:11,padding:'2px 8px',borderRadius:20,fontWeight:700}},pendingOrders)),
+        h('button',{onClick:()=>syncAllToCloud(menu,messages,showToast),style:{background:'var(--gold)',border:'none',color:'#1a2e1a',fontWeight:700,fontSize:12,padding:'6px 12px',borderRadius:8,cursor:'pointer',display:'flex',alignItems:'center',gap:5}},
+          h('svg',{viewBox:'0 0 24 24',fill:'currentColor',width:15,height:15},h('path',{d:'M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z'})),
+          'Sync All'
+        ),
         h('button',{onClick:()=>{setShowAdmin(false);},style:{background:'transparent',border:'none',color:'var(--gold2)',fontSize:22,cursor:'pointer'}},'X')
       ),
       h('div',{className:'admin-tabs'},
