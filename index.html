@@ -4109,7 +4109,7 @@ function App(){
   const[screen,setScreen]=useState('home');
   const[navTab,setNavTab]=useState('home');
   const[menu,setMenu]=useState(DEFAULT_MENU);
-  const[menuLoading,setMenuLoading]=useState(true);
+  const[menuLoading,setMenuLoading]=useState(false);
   const[messages,setMessages]=useState(DEFAULT_MESSAGES);
   const[faq,setFaq]=useState([]);
   const[tableOrders,setTableOrders]=useState(()=>store.get('stellas_orders',{}));
