@@ -1880,7 +1880,11 @@ function TakeoutCartDrawer({cart, setCart, onClose, onCheckout, showToast, onVie
           ),
           h('button',{className:'btn btn-green',style:{width:'100%',fontSize:16,padding:'15px'},onClick:goToInfo},'Continue to Details')
         ),
-        step==='info'&&h('button',{className:'btn btn-green',style:{width:'100%',fontSize:16,padding:'15px'},onClick:submitOrder},'Place Takeout Order')
+        step==='info'&&h('div',null,
+          h('button',{className:'btn btn-green',style:{width:'100%',fontSize:16,padding:'15px',marginBottom:10},onClick:submitOrder},'🍽 Pay at Restaurant'),
+          (()=>{const sl=store.get('stellas_stripe_link','');return sl?h('button',{className:'btn',style:{width:'100%',fontSize:16,padding:'15px',background:'#635BFF',color:'white',border:'none',borderRadius:50},onClick:()=>{window.open(sl,'_blank');submitOrder();}},
+            '💳 Pay with Stripe'):null;})()
+        )
       )
     )
   );
@@ -2958,6 +2962,7 @@ function AdminSettingsPanel({showToast}){
   const[sbKey,setSbKey]=useState(()=>store.get('stellas_sb_key','')||'sb_publishable_1UK0HHWj_xpRPLwnAYZeQg_SJ1QXJP5');
   const[sbBucket,setSbBucket]=useState(()=>store.get('stellas_sb_bucket',''));
   const[sbTestResult,setSbTestResult]=useState('');
+  const[stripeLink,setStripeLink]=useState(()=>store.get('stellas_stripe_link',''));
   const[revealed,setRevealed]=useState({});
   const[saving,setSaving]=useState(false);
   const[openSection,setOpenSection]=useState('provider');
@@ -2978,6 +2983,7 @@ function AdminSettingsPanel({showToast}){
     store.set('stellas_sb_key',sbKey.trim());
     store.set('stellas_sb_bucket',sbBucket.trim());
     store.set('stellas_home_titles',homeTitles);
+    store.set('stellas_stripe_link',stripeLink.trim());
     setTimeout(()=>{
       setSaving(false);
       const provLabel=AI_PROVIDERS[cfg.provider]?.label||cfg.provider;
@@ -3148,6 +3154,19 @@ function AdminSettingsPanel({showToast}){
       sbTestResult&&h('div',{style:{fontSize:12,color:'var(--text2)',padding:'6px 10px',background:'rgba(201,168,76,.08)',borderRadius:8,marginBottom:8}},sbTestResult),
       h('div',{style:{fontSize:11,color:'var(--text3)',lineHeight:1.5,padding:'8px 10px',background:'rgba(201,168,76,.06)',borderRadius:8}},
         '📖 Get these from Supabase → Project Settings → API. Tables required: ',h('code',{style:{fontSize:10}},'menu_items'),', ',h('code',{style:{fontSize:10}},'messages'),', ',h('code',{style:{fontSize:10}},'faq'),'. Files still upload to R2.'
+      )
+    ),
+
+    h(Accord,{id:'stripe',emoji:'💳',label:'Stripe Payments'},
+      h('div',{style:{fontSize:13,color:'var(--text2)',lineHeight:1.6,marginBottom:14}},
+        'Add a Stripe checkout option at cart. Customers can choose to pay online or at the register. Create a Payment Link at ',h('b',null,'stripe.com/payment-links'),' and paste it below.'
+      ),
+      h('div',{style:{marginBottom:10}},
+        h('label',{className:'label'},'Stripe Payment Link'),
+        h('input',{value:stripeLink,onChange:e=>setStripeLink(e.target.value),placeholder:'https://buy.stripe.com/…',className:'field'})
+      ),
+      h('div',{style:{fontSize:11,color:'var(--text3)',lineHeight:1.5,padding:'8px 10px',background:'rgba(201,168,76,.06)',borderRadius:8}},
+        '💡 Leave blank to hide the Stripe option — only "Pay at Restaurant" will show. The Payment Link can be set to any amount or use Stripe\'s "customer chooses price" option for demo purposes.'
       )
     ),
 
