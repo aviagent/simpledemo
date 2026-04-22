@@ -2963,6 +2963,7 @@ function AdminSettingsPanel({showToast}){
   const[sbBucket,setSbBucket]=useState(()=>store.get('stellas_sb_bucket',''));
   const[sbTestResult,setSbTestResult]=useState('');
   const[stripeLink,setStripeLink]=useState(()=>store.get('stellas_stripe_link',''));
+  const[stripeSecretKey,setStripeSecretKey]=useState(()=>store.get('stellas_stripe_secret',''));
   const[revealed,setRevealed]=useState({});
   const[saving,setSaving]=useState(false);
   const[openSection,setOpenSection]=useState('provider');
@@ -2984,6 +2985,7 @@ function AdminSettingsPanel({showToast}){
     store.set('stellas_sb_bucket',sbBucket.trim());
     store.set('stellas_home_titles',homeTitles);
     store.set('stellas_stripe_link',stripeLink.trim());
+    store.set('stellas_stripe_secret',stripeSecretKey.trim());
     setTimeout(()=>{
       setSaving(false);
       const provLabel=AI_PROVIDERS[cfg.provider]?.label||cfg.provider;
@@ -3164,6 +3166,10 @@ function AdminSettingsPanel({showToast}){
       h('div',{style:{marginBottom:10}},
         h('label',{className:'label'},'Stripe Payment Link'),
         h('input',{value:stripeLink,onChange:e=>setStripeLink(e.target.value),placeholder:'https://buy.stripe.com/…',className:'field'})
+      ),
+      h('div',{style:{marginBottom:10}},
+        h('label',{className:'label'},'Stripe Secret Key'),
+        h('input',{type:'password',value:stripeSecretKey,onChange:e=>setStripeSecretKey(e.target.value),placeholder:'sk_live_…',className:'field'})
       ),
       h('div',{style:{fontSize:11,color:'var(--text3)',lineHeight:1.5,padding:'8px 10px',background:'rgba(201,168,76,.06)',borderRadius:8}},
         '💡 Leave blank to hide the Stripe option — only "Pay at Restaurant" will show. The Payment Link can be set to any amount or use Stripe\'s "customer chooses price" option for demo purposes.'
