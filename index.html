@@ -311,9 +311,13 @@ function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body,#root{height:100%;width:100%;overflow:hidden}
-body{font-family:'Lato',sans-serif;background:#f5ede4}
-#root{display:flex;flex-direction:column}
+html,body{height:100%;width:100%;overflow:hidden}
+body{font-family:'Lato',sans-serif;background:#1a3a2a}
+#root{display:flex;flex-direction:column;width:100%;height:100%;max-width:430px;max-height:932px;margin:0 auto;overflow:hidden;position:relative}
+@media (min-width:768px){
+  body{display:flex;align-items:center;justify-content:center}
+  #root{height:min(932px,95vh)}
+}
 
 :root{
   --cream:#f5ede4;--cream2:#ede0d3;--cream3:#faf6f0;
