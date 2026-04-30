@@ -879,6 +879,7 @@ function faqToSB(e){
 // -- UNIFIED SAVE --
 async function saveMenu(updatedMenu, showToastFn){
   await idbSet('stellas_menu', updatedMenu);
+  await idbSet('stellas_data_version', DATA_VERSION); // stamp version so admin edits survive future source updates
   const cfg=sbCfg();
   if(cfg){
     await Promise.all(updatedMenu.map(item=>sbUpsert('menu_items', menuToSB(item))));
@@ -888,6 +889,7 @@ async function saveMenu(updatedMenu, showToastFn){
 
 async function saveMessages(updatedMsgs, showToastFn){
   await idbSet('stellas_messages', updatedMsgs);
+  await idbSet('stellas_data_version', DATA_VERSION); // stamp version so admin edits survive future source updates
   const cfg=sbCfg();
   if(cfg){
     await Promise.all(updatedMsgs.map(m=>sbUpsert('messages', msgToSB(m))));
@@ -924,10 +926,12 @@ async function syncAllToCloud(menu, messages, showToastFn){
 
 async function deleteMenuItem(id, updatedMenu){
   await idbSet('stellas_menu', updatedMenu);
+  await idbSet('stellas_data_version', DATA_VERSION);
   await sbDelete('menu_items', id);
 }
 async function deleteMessage(id, updatedMsgs){
   await idbSet('stellas_messages', updatedMsgs);
+  await idbSet('stellas_data_version', DATA_VERSION);
   await sbDelete('messages', id);
 }
 async function deleteFAQEntry(id, updatedFAQ){
