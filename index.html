@@ -976,13 +976,15 @@ async function loadFAQData(){
 
 // ==========================================
 // DEFAULT DATA (baked 2026-04-11 from menu.csv; Supabase updates at runtime)
+// Bump DATA_VERSION whenever defaults change — forces all clients to reseed on next load
 // ==========================================
+const DATA_VERSION = 2;
 const DEFAULT_MENU=[
   {id:727282788,name:"Loaded Potato Skins",price:14,cat:"Starters",desc:"Golden, crispy potato skins piled high with melted cheddar, smoky bacon bits, fresh green onions, and a dollop of cool sour cream. The perfect shareable starter.",ing:"potato skins|cheddar cheese|bacon|green onion|sour cream",videoUrl:"",videoFilename:"avi-anna-potato-skins.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/loaded-potato-skins.png",visible:true,triggerKeywords:"potato skins|loaded potato skins",triggerType:"item-request",triggers:[]},
   {id:1607670061,name:"Classic Chicken Wings",price:16,cat:"Starters",desc:"A full pound of our bone-in wings \u2014 crispy on the outside, juicy on the inside. Choose your favourite sauce and dig in. Served with carrots, celery, and blue cheese dip.",ing:"chicken wings|hot sauce|bbq sauce|honey garlic|carrots|celery|blue cheese",videoUrl:"",videoFilename:"-avi-anna-classic-wings-1-lb.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/classic-chicken-wings.png",visible:true,triggerKeywords:"chicken wings|tell me about wings|classic wings|wing sauces",triggerType:"item-request",triggers:[]},
   {id:1619117043,name:"Boneless Chicken Wings",price:15,cat:"Starters",desc:"All the flavour, none of the bones. Tender breaded chicken bites tossed in your choice of sauce and served with carrots, celery, and a ranch dipping sauce.",ing:"boneless chicken|hot sauce|bbq sauce|honey garlic|carrots|celery|ranch",videoUrl:"",videoFilename:"avi-anna-boneless-wings-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/boneless-chicken-wings.png",visible:true,triggerKeywords:"boneless wings|show me boneless wings|chicken bites|boneless chicken wings",triggerType:"item-request",triggers:[]},
   {id:141244697,name:"Beef Sliders",price:15,cat:"Starters",desc:"Three perfectly portioned mini burgers stacked with melted cheddar, tangy pickles, and crispy onion strings on soft brioche buns. Great for sharing \u2014 or not.",ing:"beef patties|cheddar cheese|pickles|onion strings|brioche buns",videoUrl:"",videoFilename:"avi-anna-beef-sliders-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/beef-sliders.png",visible:true,triggerKeywords:"beef sliders|tell me about sliders|mini burgers|three beef sliders",triggerType:"item-request",triggers:[]},
-  {id:1371986697,name:"Pulled Pork Sliders",price:15,cat:"Starters",desc:"Slow-cooked BBQ pulled pork piled onto three soft mini buns and topped with creamy, tangy coleslaw. Smoky, sweet, and seriously satisfying.",ing:"pulled pork|bbq sauce|coleslaw|mini buns",videoUrl:"",videoFilename:"",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/pulled-pork-sliders.png",visible:true,triggerKeywords:"pulled pork sliders|show me pulled pork sliders|pork sliders|bbq sliders",triggerType:"item-request",triggers:[]},
+  {id:1371986697,name:"Pulled Pork Sliders",price:15,cat:"Starters",desc:"Slow-cooked BBQ pulled pork piled onto three soft mini buns and topped with creamy, tangy coleslaw. Smoky, sweet, and seriously satisfying.",ing:"pulled pork|bbq sauce|coleslaw|mini buns",videoUrl:"",videoFilename:"avi-anna-pulled-pork-sliders.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/pulled-pork-sliders.png",visible:true,triggerKeywords:"pulled pork sliders|show me pulled pork sliders|pork sliders|bbq sliders",triggerType:"item-request",triggers:[]},
   {id:164935858,name:"The Classic Burger",price:18,cat:"Mains",desc:"A timeless favourite \u2014 a juicy 6oz beef patty stacked with crisp lettuce, fresh tomato, onion, and pickles on a toasted brioche bun. Served with a side of golden fries.",ing:"beef patty|lettuce|tomato|onion|pickles|brioche bun|fries",videoUrl:"",videoFilename:"avi-anna-classic-burger-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/the-classic-burger.png",visible:true,triggerKeywords:"classic burger|tell me about the burger|hamburger|cheeseburger",triggerType:"item-request",triggers:[]},
   {id:1156455740,name:"BBQ Bacon Burger",price:20,cat:"Mains",desc:"Bold, smoky, and indulgent. A 6oz beef patty loaded with smoked bacon, melted cheddar, crispy onion rings, and tangy BBQ sauce on a brioche bun. Served with fries.",ing:"beef patty|bacon|cheddar cheese|onion rings|bbq sauce|brioche bun|fries",videoUrl:"",videoFilename:"avi-anna-bbq-bacon--burger-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/bbq-bacon-burger.png",visible:true,triggerKeywords:"bbq bacon burger|bbq burger|bacon burger|tell me about the bacon burger",triggerType:"item-request",triggers:[]},
   {id:1867334732,name:"Chicken Caesar Salad",price:17,cat:"Mains",desc:"A restaurant classic done right. Crisp romaine tossed in a rich, creamy Caesar dressing with tender grilled chicken, shaved parmesan, and house-made croutons.",ing:"romaine lettuce|grilled chicken|caesar dressing|parmesan cheese|croutons",videoUrl:"",videoFilename:"avi-anna-chicken-ceasar-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/chicken-caesar-salad.png",visible:true,triggerKeywords:"chicken caesar salad|show me chicken caesar salad|caesar salad with chicken",triggerType:"item-request",triggers:[]},
@@ -1007,7 +1009,7 @@ const DEFAULT_MENU=[
   {id:1614984310,name:"Iced Tea",price:3.5,cat:"Drinks",desc:"Chilled and lightly sweetened lemon iced tea \u2014 a classic non-alcoholic option that's cool and refreshing any time of day.",ing:"water|tea extract|sugar|lemon flavor",videoUrl:"",videoFilename:"avi-anna-iced-tea-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/iced-tea-with-lemon.png",visible:true,triggerKeywords:"iced tea|brisk|sweet tea|lemon tea",triggerType:"item-request",triggers:[]},
   {id:2142172175,name:"Hot Green Tea",price:3,cat:"Drinks",desc:"A calming, aromatic cup of steamed green tea. Light, clean, and the perfect way to wind down.",ing:"green tea bag|hot water",videoUrl:"",videoFilename:"avi-anna-hot-green-tea.mov",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/hot-green-tea-set.png",visible:true,triggerKeywords:"green tea|hot tea|tea",triggerType:"item-request",triggers:[]},
   {id:895206007,name:"Orange Juice",price:4,cat:"Drinks",desc:"Freshly squeezed and full of natural sweetness. Pure orange juice with no pulp \u2014 bright, vibrant, and refreshing.",ing:"oranges",videoUrl:"",videoFilename:"avi-anna-orange-juice-.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/fresh-orange-juice.png",visible:true,triggerKeywords:"orange juice|oj|orange drink",triggerType:"item-request",triggers:[]},
-  {id:1203125647,name:"Apple Juice",price:4,cat:"Drinks",desc:"Cool and crisp 100% pure apple juice \u2014 naturally sweet with a clean, refreshing finish. A great choice for any age.",ing:"apples",videoUrl:"",videoFilename:"",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/apple-juice-.jpg",visible:true,triggerKeywords:"apple juice|juice|apple drink",triggerType:"item-request",triggers:[]}
+  {id:1203125647,name:"Apple Juice",price:4,cat:"Drinks",desc:"Cool and crisp 100% pure apple juice \u2014 naturally sweet with a clean, refreshing finish. A great choice for any age.",ing:"apples",videoUrl:"",videoFilename:"avi-anna-apple-juice.mp4",imgUrl:"https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/apple-juice-.jpg",visible:true,triggerKeywords:"apple juice|juice|apple drink",triggerType:"item-request",triggers:[]}
 ];
 const DEFAULT_MESSAGES=[{id:1,type:'welcome',title:"Welcome to Stella's!",body:"Hi! I'm Anna, your AI host. I'm here to help you explore today's menu, answer questions about ingredients, and make your experience amazing. What can I get for you?",imgUrl:'',videoUrl:'',videoFilename:'avi-anna-hi-greeting.mp4',active:true,slot:'feature1',scheduleStart:'',scheduleEnd:'',triggerKeywords:'Hi, hello, hi Anna'},{id:2,type:'goodbye',title:'Thanks for visiting!',body:"It was wonderful having you! We hope to see you again soon. Don't forget to check out our weekly specials -- Anna will always be here to help!",imgUrl:'',videoUrl:'',videoFilename:'avi-anna-nice-having-you-.mp4',active:true,slot:'feature1',scheduleStart:'',scheduleEnd:'',triggerKeywords:'Bye, bye Anna, goodbye'},{id:3,type:'promo',title:'Happy Hour Special',body:'Enjoy 50% off all cocktails & appetizers every weekday 3-6pm!',imgUrl:'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/old-fashioned-cocktail.png',videoUrl:'',videoFilename:'',active:true,slot:'feature1',scheduleStart:'',scheduleEnd:'',triggerKeywords:''},{id:4,type:'promo',title:"Chef's Weekly Special",body:'This week only: Braised Short Rib with truffle mash and charred broccolini.',imgUrl:'https://pub-256270f3b6ae4b05a10dafb461aaab7e.r2.dev/steak-frites.png',videoUrl:'',videoFilename:'',active:true,slot:'feature2',scheduleStart:'',scheduleEnd:'',triggerKeywords:''}];
 
@@ -4211,15 +4213,29 @@ function App(){
   // applied in the first tick; Supabase syncs in the background (10s timeout).
   // None of these calls wipe state on failure (if() guards throughout).
   useEffect(()=>{
-    // 1. Restore from IDB cache instantly (faster than Supabase)
-    idbGet('stellas_menu', null).then(v=>{ if(v&&v.length) setMenu(v); });
-    idbGet('stellas_messages', null).then(v=>{ if(v&&v.length) setMessages(v); });
-    idbGet('stellas_faq', null).then(v=>{ if(v&&v.length) setFaq(v); });
-    // 2. Background Supabase sync — updates state only on success
-    loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); });
-    loadMessagesData().then(v=>{ if(v&&v.length) setMessages(v); });
-    loadFAQData().then(v=>{ if(v&&v.length) setFaq(v); });
-    try{ const s=localStorage.getItem('stellas_last_order'); if(s) setLastOrderNum(JSON.parse(s).orderNum); }catch(e){}
+    (async()=>{
+      // Version check: if source DATA_VERSION is newer than what's in IDB,
+      // wipe the cached data and reseed from baked-in defaults so all clients
+      // always pick up source changes on next visit.
+      const storedVer = await idbGet('stellas_data_version', 0);
+      if(storedVer < DATA_VERSION){
+        await idbSet('stellas_menu', DEFAULT_MENU);
+        await idbSet('stellas_messages', DEFAULT_MESSAGES);
+        await idbSet('stellas_data_version', DATA_VERSION);
+        setMenu(DEFAULT_MENU);
+        setMessages(DEFAULT_MESSAGES);
+      } else {
+        // 1. Restore from IDB cache instantly (faster than Supabase)
+        idbGet('stellas_menu', null).then(v=>{ if(v&&v.length) setMenu(v); });
+        idbGet('stellas_messages', null).then(v=>{ if(v&&v.length) setMessages(v); });
+      }
+      idbGet('stellas_faq', null).then(v=>{ if(v&&v.length) setFaq(v); });
+      // 2. Background Supabase sync — updates state only on success
+      loadMenuData().then(v=>{ if(v&&v.length) setMenu(v); });
+      loadMessagesData().then(v=>{ if(v&&v.length) setMessages(v); });
+      loadFAQData().then(v=>{ if(v&&v.length) setFaq(v); });
+      try{ const s=localStorage.getItem('stellas_last_order'); if(s) setLastOrderNum(JSON.parse(s).orderNum); }catch(e){}
+    })();
   },[]);
 
   function showToast(msg){setToast(msg);}
